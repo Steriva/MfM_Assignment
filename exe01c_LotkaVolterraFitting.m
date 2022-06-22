@@ -34,11 +34,11 @@ options2 = optimoptions("fmincon","Algorithm","interior-point","Display","iter",
 
 objfun = @(mu) computingOF(mu, populationData(:,2:3), time, IC);
 
-mu0 = [0.7; 0.1; 0.1; 0.7];
+mu0 = [0.7; 0.01; 0.01; 0.7];
 
 % [muSolution,~] = lsqnonlin(objfun,mu0,[0 0 0 0], [+Inf +Inf +Inf +Inf],options);
 
-[muSolution,~] = fmincon(objfun,mu0,[],[],[],[],[0 0 0 0], [+Inf 0.6 0.6 +Inf],...
+[muSolution,~] = fmincon(objfun,mu0,[],[],[],[],[0 0 0 0.5], [2 +Inf +Inf +Inf],...
    [],options2);
  
 bSol = muSolution(1);
@@ -49,15 +49,17 @@ dSol = muSolution(4);
 [tSolution, solution] = solvingLotkaVolterra(bSol,pSol,rSol,dSol, [min(time), max(time)], IC);
 
 figure(1)
-subplot(2,1,1), plot(populationData(:,1),populationData(:,2),'o','MarkerSize',markersize,'MarkerFaceColor','r','MarkerEdgeColor','k')
+subplot(2,1,1), plot(populationData(:,1),populationData(:,2),'o','MarkerSize',markersize,'MarkerFaceColor',colours{1},'MarkerEdgeColor','k')
 grid on; grid minor; hold on
-plot(tSolution+initialTime, solution(:,1),'b')
+plot(tSolution+initialTime, solution(:,1),'Color',colours{1},'LineStyle','--','LineWidth',2)
 xlabel('Time [years]','Interpreter','latex','FontSize',30)
-ylabel('Snowshoe Hare Pelts','Interpreter','latex','FontSize',30,'Color','r')
+ylabel('Snowshoe Hare Pelts','Interpreter','latex','FontSize',30,'Color',colours{1})
+legend('Data','Fitting model','Interpreter','latex','FontSize',30)
 
-subplot(2,1,2), plot(populationData(:,1), populationData(:,3),'o','MarkerSize',markersize,'MarkerFaceColor','b','MarkerEdgeColor','k')
+subplot(2,1,2), plot(populationData(:,1),populationData(:,3),'o','MarkerSize',markersize,'MarkerFaceColor',colours{2},'MarkerEdgeColor','k')
 grid on; grid minor; hold on
-plot(tSolution+initialTime, solution(:,2),'b')
+plot(tSolution+initialTime, solution(:,2),'Color',colours{2},'LineStyle','--','LineWidth',2)
 xlabel('Time [years]','Interpreter','latex','FontSize',30)
-ylabel('Canada Lynx Pelts','Interpreter','latex','FontSize',30,'Color','b')
+ylabel('Snowshoe Hare Pelts','Interpreter','latex','FontSize',30,'Color',colours{2})
+legend('Data','Fitting model','Interpreter','latex','FontSize',30)
 %sgtitle('Population Data','Interpreter','latex','FontSize',30)

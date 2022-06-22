@@ -24,6 +24,8 @@ initialTime = populationData(1,1);
 % Resize the time
 time = (populationData(:,1)-initialTime)';
 
+dt = populationData(2,1)-populationData(1,1);
+
 figure(1)
 subplot(2,1,1), plot(populationData(:,1),populationData(:,2),'o','MarkerSize',markersize,'MarkerFaceColor','r','MarkerEdgeColor','k')
 grid on; grid minor
@@ -75,9 +77,9 @@ ylabel('$\frac{\sigma_j}{\sum_k \sigma_k}\;\;[-]$','Interpreter','latex','FontSi
 title('Log Scale','Interpreter','latex','FontSize',30)
 legend(Legend,'Interpreter','latex','FontSize',50)
 
-%% Perform exact DMD
+%% Perform standard DMD
 
-r = 10;
+r = 12;
 pOpt = size(X,2)/(size(X,1)+1);
 H1 = H{p==pOpt}(:,1:end-1);
 H2 = H{p==pOpt}(:,2:end);
@@ -89,20 +91,27 @@ V = V(:,1:r);
 
 Atilde = U'*H2*V*diag(1./diag(Sigma)); % similarity transformation A to Atilde
 
-[eV, D] = eig(Atilde); % eigen-decomposition: eV vector, D eigenvalues
-mu = diag(D); % mu: diagonal of eigenvalue matrix D
-dt = populationData(2,1)-populationData(1,1);
-omega = log(mu)/dt;
-Phi = H2*(V/Sigma)*eV; % DMD modes
-alpha1 = Sigma*V(1,:)';
-bj = (eV * D)\alpha1;
+[W_opt, Lambda] = eig(Atilde); % find the eigenvalues (Lambda) and eigenvector (W)
+lambda = diag(Lambda); % lambda: diagonal of eigenvalue matrix Lambda
+
+omega = log(lambda)/dt;
+Phi = H2*(V/Sigma)*W_opt; % DMD modes
+alpha1 = Sigma*V(1,:)'; % "IC"
+bj = (W_opt * Lambda)\alpha1;   % vector of mode amplitude
+
+labels = cell(length(lambda),1);
+for jj = 1:length(lambda)
+    labels{jj} = strcat('$\lambda_{',num2str(jj),'}$');
+end
 
 figure(3)
-plot(mu,'o','MarkerSize',markersize,'MarkerFaceColor','r','MarkerEdgeColor','k')
+plot(real(lambda), imag(lambda),'o','MarkerSize',markersize,'MarkerFaceColor','r','MarkerEdgeColor','k')
+text(real(lambda)- (lambda==lambda(3)) * 0.02, imag(lambda)+0.05, labels,'Interpreter','latex','FontSize',20)
 grid on; grid minor; hold on
 plot([0 0], [-1 1],[-1 1], [0 0],'Linewidth',2,'Color','k')
 xlabel('Re','Interpreter','latex','FontSize',30)
 ylabel('Im','Interpreter','latex','FontSize',30)
+title('DMD eigenvalues','Interpreter','latex','FontSize',30)
 
 
 u_modes=zeros(size(V,2), length(time));
@@ -130,6 +139,8 @@ else
     disp('Check the imaginary part: it may be too high')
 end
 
+relerr_r(1) = norm(u_dmd(1:2,:)-X,'fro')/norm(X,'fro');
+
 % Plot the DMD reconstruction vs true solution
 figure(4)
 subplot(2,1,1), plot(populationData(:,1),populationData(:,2),'o','MarkerSize',markersize,'MarkerFaceColor','r','MarkerEdgeColor','k')
@@ -152,20 +163,21 @@ sgtitle(strcat('r=',num2str(r)),'Interpreter','latex','FontSize',30)
 
 %% Optimized DMD
 
-[w,e1,b] = optdmd(H{p==pOpt},time(1:end-pOpt),r,1);
+imode = 2; % routine computes the POD modes
+[W_opt,omega_opt,b_opt] = optdmd(H{p==pOpt},time(1:end-pOpt),r,imode);
 
 % reconstructed values
-x1 = w*diag(b)*exp(e1*time(1:end-pOpt));
-relerr_r = norm(x1-H{p==pOpt},'fro')/norm(H{p==pOpt},'fro');
+H_opt = W_opt*diag(b_opt)*exp(omega_opt*time(1:end-pOpt));
+relerr_r(2) = norm(H_opt-H{p==pOpt},'fro')/norm(H{p==pOpt},'fro')
 
-if max(max(abs(imag(x1))))<1e-8
-    x1 = real(x1);
+if max(max(abs(imag(H_opt))))<1e-5
+    H_opt = real(H_opt);
 else
     disp('Check the imaginary part: it may be too high')
 end
 
-u_optDMD = [x1(1,:), x1(end-1,end-pOpt+1:end);...
-            x1(2,:), x1(end,  end-pOpt+1:end)];
+u_optDMD = [H_opt(1,:), H_opt(end-1,end-pOpt+1:end);...
+            H_opt(2,:), H_opt(end,  end-pOpt+1:end)];
 
 figure(5)
 subplot(2,1,1), plot(populationData(:,1),populationData(:,2),'o','MarkerSize',markersize,'MarkerFaceColor','r','MarkerEdgeColor','k')

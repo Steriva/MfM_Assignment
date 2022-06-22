@@ -69,18 +69,24 @@ subplot(1,2,1), grid on; grid minor;
 xlabel('Dimension $j$','Interpreter','latex','FontSize',30)
 ylabel('$100\cdot\frac{\sigma_j}{\sum_k \sigma_k}\;\;[\%]$','Interpreter','latex','FontSize',50,'Color','k')
 title('Linear Scale','Interpreter','latex','FontSize',30)
-legend(Legend,'Interpreter','latex','FontSize',50)
+legend(Legend,'Interpreter','latex','FontSize',25)
 
 subplot(1,2,2), grid on; grid minor; 
 xlabel('Dimension $j$','Interpreter','latex','FontSize',30)
 ylabel('$\frac{\sigma_j}{\sum_k \sigma_k}\;\;[-]$','Interpreter','latex','FontSize',50,'Color','k')    
 title('Log Scale','Interpreter','latex','FontSize',30)
-legend(Legend,'Interpreter','latex','FontSize',50)
+legend(Legend,'Interpreter','latex','FontSize',25)
+
+% h = gcf;
+% set(h,'PaperOrientation','landscape');
+% set(h,'PaperUnits','normalized');
+% set(h,'PaperPosition', [0 0 1 1]);
+% print(gcf, '-dpdf', 'timeDelaySVD.pdf');
 
 %% Perform standard DMD
 
-r = 12;
-pOpt = size(X,2)/(size(X,1)+1);
+r = 11;
+pOpt = round( (size(X,2)-1) / (size(X,1)+1) );
 H1 = H{p==pOpt}(:,1:end-1);
 H2 = H{p==pOpt}(:,2:end);
 
@@ -91,13 +97,16 @@ V = V(:,1:r);
 
 Atilde = U'*H2*V*diag(1./diag(Sigma)); % similarity transformation A to Atilde
 
-[W_opt, Lambda] = eig(Atilde); % find the eigenvalues (Lambda) and eigenvector (W)
+[W, Lambda] = eig(Atilde); % find the eigenvalues (Lambda) and eigenvector (W)
 lambda = diag(Lambda); % lambda: diagonal of eigenvalue matrix Lambda
 
 omega = log(lambda)/dt;
-Phi = H2*(V/Sigma)*W_opt; % DMD modes
+Phi = H2*(V/Sigma)*W; % DMD modes
 alpha1 = Sigma*V(1,:)'; % "IC"
-bj = (W_opt * Lambda)\alpha1;   % vector of mode amplitude
+bj = (W * Lambda)\alpha1;   % vector of mode amplitude
+
+alpha1 = H1(:,1);
+bj = Phi\alpha1;
 
 labels = cell(length(lambda),1);
 for jj = 1:length(lambda)
@@ -128,6 +137,7 @@ end
 
 sampleTime = linspace(min(time),max(time),1e3);
 u_modesSample=zeros(size(V,2), length(sampleTime));
+
 for iter = 1:length(sampleTime)
     u_modesSample(:,iter) = bj.*exp(omega*sampleTime(iter));
 end
@@ -147,51 +157,68 @@ subplot(2,1,1), plot(populationData(:,1),populationData(:,2),'o','MarkerSize',ma
 grid on; grid minor; hold on
 plot(populationData(:,1),u_dmd(1,:),'o','MarkerSize',markersize,'MarkerFaceColor','b','MarkerEdgeColor','k')
 plot(sampleTime+initialTime,u_dmdSample(1,:),'Color','b','Linewidth',1.5)
-legend('FOM', 'DMD','Interpreter','latex','FontSize',30,'Location','Best')
-xlabel('Time [years]','Interpreter','latex','FontSize',30)
-ylabel('Snowshoe Hare Pelts','Interpreter','latex','FontSize',30,'Color','k')
+legend('FOM', 'DMD','Interpreter','latex','FontSize',20,'Location','Best')
+% xlabel('Time [years]','Interpreter','latex','FontSize',30)
+ylabel('Snowshoe Hare Pelts','Interpreter','latex','FontSize',25,'Color','k')
 
 subplot(2,1,2), plot(populationData(:,1),populationData(:,3),'o','MarkerSize',markersize,'MarkerFaceColor','r','MarkerEdgeColor','k')
 grid on; grid minor; hold on
 plot(populationData(:,1), u_dmd(2,:),'o','MarkerSize',markersize,'MarkerFaceColor','b','MarkerEdgeColor','k')
 plot(sampleTime+initialTime,u_dmdSample(2,:),'Color','b','Linewidth',1.5)
-legend('FOM', 'DMD','Interpreter','latex','FontSize',30,'Location','Best')
-xlabel('Time [years]','Interpreter','latex','FontSize',30)
-ylabel('Canada Lynx Pelts','Interpreter','latex','FontSize',30,'Color','k')
-sgtitle(strcat('r=',num2str(r)),'Interpreter','latex','FontSize',30)
+legend('FOM', 'DMD','Interpreter','latex','FontSize',20,'Location','Best')
+xlabel('Time [years]','Interpreter','latex','FontSize',25)
+ylabel('Canada Lynx Pelts','Interpreter','latex','FontSize',25,'Color','k')
+% sgtitle(strcat('r=',num2str(r)),'Interpreter','latex','FontSize',30)
 
+h = gcf;
+set(h,'PaperOrientation','landscape');
+set(h,'PaperUnits','normalized');
+set(h,'PaperPosition', [0 0 1 1]);
+print(gcf, '-dpdf', 'timeDelayDMD.pdf');
 
 %% Optimized DMD
 
 imode = 2; % routine computes the POD modes
-[W_opt,omega_opt,b_opt] = optdmd(H{p==pOpt},time(1:end-pOpt),r,imode);
+[W_opt,omega_opt,b_opt] = optdmd(H{p==pOpt},time(1:end-pOpt+1),r,imode);
 
 % reconstructed values
-H_opt = W_opt*diag(b_opt)*exp(omega_opt*time(1:end-pOpt));
-relerr_r(2) = norm(H_opt-H{p==pOpt},'fro')/norm(H{p==pOpt},'fro')
+u_optDMD = W_opt*diag(b_opt)*exp(omega_opt*time);
+relerr_r(2) = norm(u_optDMD(1:2,:)-X,'fro')/norm(X,'fro')
 
-if max(max(abs(imag(H_opt))))<1e-5
-    H_opt = real(H_opt);
+if max(max(abs(imag(u_optDMD))))<1e-12
+    u_optDMD = real(u_optDMD);
 else
     disp('Check the imaginary part: it may be too high')
 end
 
-u_optDMD = [H_opt(1,:), H_opt(end-1,end-pOpt+1:end);...
-            H_opt(2,:), H_opt(end,  end-pOpt+1:end)];
+H_optSample = W_opt*diag(b_opt)*exp(omega_opt*sampleTime);
+
+if max(max(abs(imag(H_optSample))))<1e-12
+    H_optSample = real(H_optSample);
+else
+    disp('Check the imaginary part: it may be too high')
+end
 
 figure(5)
 subplot(2,1,1), plot(populationData(:,1),populationData(:,2),'o','MarkerSize',markersize,'MarkerFaceColor','r','MarkerEdgeColor','k')
 grid on; grid minor; hold on
-plot(time(1:end)+initialTime,u_optDMD(1,:),'b-o','Linewidth',1.5,'MarkerSize',markersize,'MarkerFaceColor','b','MarkerEdgeColor','k')
-legend('FOM', 'opt-DMD','Interpreter','latex','FontSize',30,'Location','Best')
-xlabel('Time [years]','Interpreter','latex','FontSize',30)
-ylabel('Snowshoe Hare Pelts','Interpreter','latex','FontSize',30,'Color','k')
+plot(time(1:end)+initialTime,u_optDMD(1,:),'bo','Linewidth',1.5,'MarkerSize',markersize,'MarkerFaceColor','b','MarkerEdgeColor','k')
+plot(sampleTime+initialTime,H_optSample(1,:),'Color','b','Linewidth',1.5)
+legend('FOM', 'DMD','Interpreter','latex','FontSize',20,'Location','Best')
+% xlabel('Time [years]','Interpreter','latex','FontSize',30)
+ylabel('Snowshoe Hare Pelts','Interpreter','latex','FontSize',25,'Color','k')
 
 subplot(2,1,2), plot(populationData(:,1),populationData(:,3),'o','MarkerSize',markersize,'MarkerFaceColor','r','MarkerEdgeColor','k')
 grid on; grid minor; hold on
-plot(time(1:end)+initialTime,u_optDMD(2,:),'b-o','Linewidth',1.5,'MarkerSize',markersize,'MarkerFaceColor','b','MarkerEdgeColor','k')
-legend('FOM', 'opt-DMD','Interpreter','latex','FontSize',30,'Location','Best')
-xlabel('Time [years]','Interpreter','latex','FontSize',30)
-ylabel('Canada Lynx Pelts','Interpreter','latex','FontSize',30,'Color','k')
-sgtitle(strcat('r=',num2str(r)),'Interpreter','latex','FontSize',30)
+plot(time(1:end)+initialTime,u_optDMD(2,:),'bo','Linewidth',1.5,'MarkerSize',markersize,'MarkerFaceColor','b','MarkerEdgeColor','k')
+plot(sampleTime+initialTime,H_optSample(2,:),'Color','b','Linewidth',1.5)
+legend('FOM', 'DMD','Interpreter','latex','FontSize',20,'Location','Best')
+xlabel('Time [years]','Interpreter','latex','FontSize',25)
+ylabel('Canada Lynx Pelts','Interpreter','latex','FontSize',25,'Color','k')
+% sgtitle(strcat('r=',num2str(r)),'Interpreter','latex','FontSize',30)
 
+h = gcf;
+set(h,'PaperOrientation','landscape');
+set(h,'PaperUnits','normalized');
+set(h,'PaperPosition', [0 0 1 1]);
+print(gcf, '-dpdf', 'timeDelayBOP_DMD.pdf');

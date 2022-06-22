@@ -24,7 +24,7 @@ time = (populationData(:,1)-initialTime)';
 
 dt = populationData(2,1)-populationData(1,1);
 
-figure(1)
+figure(1);
 subplot(2,1,1), plot(populationData(:,1),populationData(:,2),'o','MarkerSize',markersize,'MarkerFaceColor','r','MarkerEdgeColor','k')
 grid on; grid minor
 xlabel('Time [years]','Interpreter','latex','FontSize',30)
@@ -35,6 +35,12 @@ grid on; grid minor
 xlabel('Time [years]','Interpreter','latex','FontSize',30)
 ylabel('Canada Lynx Pelts','Interpreter','latex','FontSize',30,'Color','b')
 %sgtitle('Population Data','Interpreter','latex','FontSize',30)
+
+% h = gcf;
+% set(h,'PaperOrientation','landscape');
+% set(h,'PaperUnits','normalized');
+% set(h,'PaperPosition', [0 0 1 1]);
+% print(gcf, '-dpdf', 'LynxHareDatast.pdf');
 
 %% Perform SVD
 X = (populationData(:,2:3))';
@@ -92,15 +98,21 @@ grid on; grid minor; hold on
 plot(populationData(:,1),u_dmd(1,:),'o','MarkerSize',markersize,'MarkerFaceColor','b','MarkerEdgeColor','k')
 legend('FOM', 'DMD','Interpreter','latex','FontSize',30,'Location','Best')
 xlabel('Time [years]','Interpreter','latex','FontSize',30)
-ylabel('Snowshoe Hare Pelts','Interpreter','latex','FontSize',30,'Color','r')
+ylabel('Snowshoe Hare Pelts','Interpreter','latex','FontSize',30,'Color','k')
 
 subplot(2,1,2), plot(populationData(:,1),populationData(:,3),'o','MarkerSize',markersize,'MarkerFaceColor','r','MarkerEdgeColor','k')
 grid on; grid minor; hold on
 plot(populationData(:,1), u_dmd(2,:),'o','MarkerSize',markersize,'MarkerFaceColor','b','MarkerEdgeColor','k')
 legend('FOM', 'DMD','Interpreter','latex','FontSize',30,'Location','Best')
 xlabel('Time [years]','Interpreter','latex','FontSize',30)
-ylabel('Canada Lynx Pelts','Interpreter','latex','FontSize',30,'Color','b')
+ylabel('Canada Lynx Pelts','Interpreter','latex','FontSize',30,'Color','k')
 %sgtitle('Population Data','Interpreter','latex','FontSize',30)
+
+% h = gcf;
+% set(h,'PaperOrientation','landscape');
+% set(h,'PaperUnits','normalized');
+% set(h,'PaperPosition', [0 0 1 1]);
+% print(gcf, '-dpdf', 'LynxHare_DMD.pdf');
 
 %% Optimized DMD
 

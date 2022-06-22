@@ -6,10 +6,10 @@ function H = buildHankelMatrix(X, p)
 % H, which is (p*n) x (M-p).
 
     [n,M] = size(X);
-    H = zeros(p*n, M-p);
+    H = zeros(p*n, M-p+1);
     
     for ii = 1:p
-        partialStateSpaceVector = [X(:,ii:M-p+(ii-1))];
+        partialStateSpaceVector = [X(:,ii:M-p+1+(ii-1))];
         H(2*(ii-1)+1,:) = partialStateSpaceVector(1,:);
         H(2*ii,:) = partialStateSpaceVector(2,:);
     end

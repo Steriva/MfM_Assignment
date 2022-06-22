@@ -24,7 +24,7 @@ disp(' ')
 input  = u_train(:,1:end-1);
 output = u_train(:,2:end);
 
-save('data/KS_trainingData.mat', 'input', 'output', 't_train',"x_train", "u_train", 'nu')
+save('data/KS_trainingData.mat', 'input', 'output', 't_train',"x_train", "u_train", 'nu', '-v6')
 
 %% Creating the validation data from the KS PDE
 
@@ -45,6 +45,6 @@ disp(' ')
 input  = u_test(:,1:end-1);
 output = u_test(:,2:end);
 
-save('data/KS_testingData.mat', 'input', 'output', 't_test',"x_test", "u_test", 'nu')
+save('data/KS_testingData.mat', 'input', 'output', 't_test',"x_test", "u_test", 'nu','-v6')
 
 

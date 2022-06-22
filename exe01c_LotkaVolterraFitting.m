@@ -46,6 +46,8 @@ dSol = muSolution(4);
 
 [tSolution, solution] = solvingLotkaVolterra(bSol,pSol,rSol,dSol, [min(time), max(time)], IC);
 
+%% Plot results
+
 figure(1)
 subplot(2,1,1), plot(populationData(:,1),populationData(:,2),'o','MarkerSize',markersize,'MarkerFaceColor',colours{1},'MarkerEdgeColor','k')
 grid on; grid minor; hold on
@@ -61,3 +63,9 @@ xlabel('Time [years]','Interpreter','latex','FontSize',30)
 ylabel('Snowshoe Hare Pelts','Interpreter','latex','FontSize',30,'Color',colours{2})
 legend('Data','Fitting model','Interpreter','latex','FontSize',30)
 %sgtitle('Population Data','Interpreter','latex','FontSize',30)
+
+% h = gcf;
+% set(h,'PaperOrientation','landscape');
+% set(h,'PaperUnits','normalized');
+% set(h,'PaperPosition', [0 0 1 1]);
+% print(gcf, '-dpdf', 'LynxHareDatast.pdf');

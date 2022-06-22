@@ -170,11 +170,11 @@ xlabel('Time [years]','Interpreter','latex','FontSize',25)
 ylabel('Canada Lynx Pelts','Interpreter','latex','FontSize',25,'Color','k')
 % sgtitle(strcat('r=',num2str(r)),'Interpreter','latex','FontSize',30)
 
-h = gcf;
-set(h,'PaperOrientation','landscape');
-set(h,'PaperUnits','normalized');
-set(h,'PaperPosition', [0 0 1 1]);
-print(gcf, '-dpdf', 'timeDelayDMD.pdf');
+% h = gcf;
+% set(h,'PaperOrientation','landscape');
+% set(h,'PaperUnits','normalized');
+% set(h,'PaperPosition', [0 0 1 1]);
+% print(gcf, '-dpdf', 'timeDelayDMD.pdf');
 
 %% Optimized DMD
 
@@ -217,8 +217,8 @@ xlabel('Time [years]','Interpreter','latex','FontSize',25)
 ylabel('Canada Lynx Pelts','Interpreter','latex','FontSize',25,'Color','k')
 % sgtitle(strcat('r=',num2str(r)),'Interpreter','latex','FontSize',30)
 
-h = gcf;
-set(h,'PaperOrientation','landscape');
-set(h,'PaperUnits','normalized');
-set(h,'PaperPosition', [0 0 1 1]);
-print(gcf, '-dpdf', 'timeDelayBOP_DMD.pdf');
+% h = gcf;
+% set(h,'PaperOrientation','landscape');
+% set(h,'PaperUnits','normalized');
+% set(h,'PaperPosition', [0 0 1 1]);
+% print(gcf, '-dpdf', 'timeDelayBOP_DMD.pdf');

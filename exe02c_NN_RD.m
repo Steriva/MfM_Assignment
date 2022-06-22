@@ -50,28 +50,34 @@ semilogy(0:length(diag(Su))-1, diag(Su)/sum(diag(Su)),'b-o','MarkerFaceColor','b
 grid on; grid minor;
 xlim([0 100])
 %xlabel('Dimension $j$','Interpreter','latex','FontSize',30)
-ylabel('$\frac{\sigma^{(u)}_j}{\sum_k \sigma_k^{(u)}}\;\;[-]$','Interpreter','latex','FontSize',50,'Color','k')
+ylabel('$\frac{\sigma^{(u)}_j}{\sum_k \sigma_k^{(u)}}\;\;[-]$','Interpreter','latex','FontSize',30,'Color','k')
 
 subplot(2,2,2)
 plot(0:length(diag(Su))-1, 1-diag(Su)/sum(diag(Su)),'b-o','MarkerFaceColor','b','Markersize',markersize,'MarkerEdgeColor','k','Linewidth',1)
 grid on; grid minor;
 xlim([0 20])
 %xlabel('Dimension $j$','Interpreter','latex','FontSize',30)
-ylabel('$1-\frac{\sigma_j^{(u)}}{\sum_k \sigma_k^{(u)}}\;\;[-]$','Interpreter','latex','FontSize',50,'Color','k')
+ylabel('$1-\frac{\sigma_j^{(u)}}{\sum_k \sigma_k^{(u)}}\;\;[-]$','Interpreter','latex','FontSize',30,'Color','k')
 
 subplot(2,2,3)
-semilogy(0:length(diag(Sv))-1, diag(Sv)/sum(diag(Sv)),'b-o','MarkerFaceColor','b','Markersize',markersize,'MarkerEdgeColor','k','Linewidth',1)
+semilogy(0:length(diag(Sv))-1, diag(Sv)/sum(diag(Sv)),'r-^','MarkerFaceColor','r','Markersize',markersize,'MarkerEdgeColor','k','Linewidth',1)
 grid on; grid minor;
 xlim([0 100])
-xlabel('Dimension $j$','Interpreter','latex','FontSize',30)
-ylabel('$\frac{\sigma^{(v)}_j}{\sum_k \sigma_k^{(v)}}\;\;[-]$','Interpreter','latex','FontSize',50,'Color','k')
+xlabel('Dimension $j$','Interpreter','latex','FontSize',20)
+ylabel('$\frac{\sigma^{(v)}_j}{\sum_k \sigma_k^{(v)}}\;\;[-]$','Interpreter','latex','FontSize',30,'Color','k')
 
 subplot(2,2,4)
-plot(0:length(diag(Sv))-1, 1-diag(Sv)/sum(diag(Sv)),'b-o','MarkerFaceColor','b','Markersize',markersize,'MarkerEdgeColor','k','Linewidth',1)
+plot(0:length(diag(Sv))-1, 1-diag(Sv)/sum(diag(Sv)),'r-^','MarkerFaceColor','r','Markersize',markersize,'MarkerEdgeColor','k','Linewidth',1)
 grid on; grid minor;
 xlim([0 20])
-xlabel('Dimension $j$','Interpreter','latex','FontSize',30)
-ylabel('$1-\frac{\sigma_j^{(v)}}{\sum_k \sigma_k^{(v)}}\;\;[-]$','Interpreter','latex','FontSize',50,'Color','k')
+xlabel('Dimension $j$','Interpreter','latex','FontSize',20)
+ylabel('$1-\frac{\sigma_j^{(v)}}{\sum_k \sigma_k^{(v)}}\;\;[-]$','Interpreter','latex','FontSize',30,'Color','k')
+
+% h = gcf;
+% set(h,'PaperOrientation','landscape');
+% set(h,'PaperUnits','normalized');
+% set(h,'PaperPosition', [0 0 1 1]);
+% print(gcf, '-dpdf', 'RD_SVDeigenvalues.pdf');
 
 %% L2-error on the training set - for u - 
 rVec = [50, 40, 30, 25, 20, 15, 10, 5, 1];
@@ -166,8 +172,14 @@ for jj = 1:4
     V_L2error(jj) = traprule(t, (V_NN(:,jj) -Vu(:,jj)).^2 ) ...
                   / traprule(t,Vu(:,jj).^2);
     title(strcat('Relative error: $\frac{|| V^{(u)}_{',num2str(jj),'}-\mathcal{P}_r(V^{(u)}_{',num2str(jj),'})||_{L^2}}{|| V^{(u)}_{',num2str(jj),'}||_{L^2}} =$',num2str(V_L2error(jj))),...
-        'Interpreter','latex','FontSize',20)
+        'Interpreter','latex','FontSize',15)
 end
+
+% h = gcf;
+% set(h,'PaperOrientation','landscape');
+% set(h,'PaperUnits','normalized');
+% set(h,'PaperPosition', [0 0 1 1]);
+% print(gcf, '-dpdf', 'RD_Vmodes_comparison.pdf');
 
 
 Xpred = Uu(:,1:r) * Su(1:r,1:r) * V_NN';
@@ -191,8 +203,68 @@ ave_errorL2norm = mean(errorL2norm);
 % xlabel('Time $t$','Interpreter','latex','FontSize',30)
 % ylabel('Relative error: $ \frac{|| u-\mathcal{P}_r(u)||_{L^2}}{|| u||_{L^2}} $','Interpreter','latex','FontSize',30)
 
+%% Contour plot
 
 [xPlot, yPlot] = meshgrid(x,y);
+
+figure(5)
+for jj = 1:4
+    timePlot = dt * jj * 50;
+    subplot(2,4,2*(jj-1)+1), contourf(xPlot, yPlot, u(:,:,timePlot/dt))
+    if 2*(jj-1)+1 == 1 || 2*(jj-1)+1 == 5
+        ylabel('$y$','Interpreter','latex','FontSize',20)
+    end
+    if jj>2
+        xlabel('$x$','Interpreter','latex','FontSize',20)
+    end
+    title(strcat('True - $t=', num2str(timePlot),'$'),'Interpreter','latex','FontSize',20)
+    colorbar; clim([-1.5 1.5])
+    colormap("turbo")
+
+    subplot(2,4,2*(jj)), contourf(xPlot, yPlot, u_NN(:,:,timePlot/dt))
+    if jj>2
+        xlabel('$x$','Interpreter','latex','FontSize',20)
+    end
+    title(strcat('NN - $t=', num2str(timePlot),'$'),'Interpreter','latex','FontSize',20)
+    colorbar; clim([-1.5 1.5])
+    colormap("turbo")
+end
+
+% h = gcf;
+% set(h,'PaperOrientation','landscape');
+% set(h,'PaperUnits','normalized');
+% set(h,'PaperPosition', [0 0 1 1]);
+% print(gcf, '-dpdf', 'RD_solution_comparison.pdf');
+
+
+% bigger pictures
+numberPlot = 8;
+for jj = 1:8
+    figure(5+jj)
+    timePlot = dt * jj * (length(t)-1)/numberPlot;
+    subplot(1,2,1), contourf(xPlot, yPlot, u(:,:,timePlot/dt))
+    ylabel('$y$','Interpreter','latex','FontSize',20)
+    xlabel('$x$','Interpreter','latex','FontSize',20)
+    title(strcat('True - $t=', num2str(timePlot),'$'),'Interpreter','latex','FontSize',20)
+    colorbar; clim([-1.5 1.5])
+    colormap("turbo")
+
+    subplot(1,2,2), contourf(xPlot, yPlot, u_NN(:,:,timePlot/dt))
+    ylabel('$y$','Interpreter','latex','FontSize',20)
+    xlabel('$x$','Interpreter','latex','FontSize',20)
+    title(strcat('NN - $t=', num2str(timePlot),'$'),'Interpreter','latex','FontSize',20)
+    colorbar; clim([-1.5 1.5])
+    colormap("turbo")
+
+%     h = gcf;
+%     set(h,'PaperOrientation','landscape');
+%     set(h,'PaperUnits','normalized');
+%     set(h,'PaperPosition', [0 0 1 1]);
+%     print(gcf, '-dpdf', strcat('RD_solution_comparison_',num2str(jj),'.pdf'));
+
+end
+
+% %% Time plot
 
 % figure(5)
 % for jj = 1:m
@@ -211,23 +283,3 @@ ave_errorL2norm = mean(errorL2norm);
 %     colormap("turbo")
 %     pause(0.01)
 % end
-
-figure(5)
-for jj = 1:4
-    timePlot = dt * jj * 50;
-    subplot(2,4,2*(jj-1)+1), contourf(xPlot, yPlot, u(:,:,timePlot/dt))
-    if 2*(jj-1)+1 == 1 || 2*(jj-1)+1 == 5
-        ylabel('$y$','Interpreter','latex','FontSize',20)
-    end
-    title(strcat('True - $t=', num2str(timePlot),'$'),'Interpreter','latex','FontSize',20)
-    colorbar; clim([-1.5 1.5])
-    colormap("turbo")
-
-    subplot(2,4,2*(jj)), contourf(xPlot, yPlot, u_NN(:,:,timePlot/dt))
-    if jj>2
-        xlabel('$x$','Interpreter','latex','FontSize',20)
-    end
-    title(strcat('NN - $t=', num2str(timePlot),'$'),'Interpreter','latex','FontSize',20)
-    colorbar; clim([-1.5 1.5])
-    colormap("turbo")
-end

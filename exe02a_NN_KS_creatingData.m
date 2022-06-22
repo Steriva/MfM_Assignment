@@ -29,7 +29,7 @@ save('data/KS_trainingData.mat', 'input', 'output', 't_train',"x_train", "u_trai
 %% Creating the validation data from the KS PDE
 
 
-nu = 0.1; % IC parameter
+nu = 0.05; % IC parameter
 
 [x_test, t_test, u_test] =  solveKS(nu, T, dt, N);
 

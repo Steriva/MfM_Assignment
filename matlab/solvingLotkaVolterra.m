@@ -4,8 +4,8 @@ function [tSolution, solution] = solvingLotkaVolterra(b,p,r,d, timeSave, IC)
 % the necessary coefficents and the IC.
 % The solution will be output at the time given by timeSave
 
-ode_options = odeset('RelTol',1e-10, 'AbsTol',1e-11);
-[tSolution,solution] = ode45(@(t,y) LotkaVolterra(y,b,p,r,d),timeSave,IC,ode_options);
+ode_options = odeset('RelTol',1e-12, 'AbsTol',1e-11);
+[tSolution,solution] = ode23(@(t,y) LotkaVolterra(y,b,p,r,d),timeSave,IC,ode_options);
 
     function dydt = LotkaVolterra(y,b,p,r,d)
     

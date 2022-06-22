@@ -26,21 +26,19 @@ IC = [populationData(1,2); populationData(1,3)];
 %% Minimization Problem
 
 % Set nondefault solver options
-options2 = optimoptions("fmincon","Algorithm","interior-point","Display","iter",...
-    "PlotFcn","optimplotfvalconstr",'MaxFunctionEvaluations',1000);
 
-% options = optimoptions('lsqnonlin','OptimalityTolerance',1e-12,'Algorithm','Levenberg-Marquardt',...
-%    'FunctionTolerance',1e-12,'StepTolerance',1e-12,'UseParallel',false,'Display','iter');
-
+option = optimset("PlotFcn","optimplotfvalconstr",'Maxiter',200);
 objfun = @(mu) computingOF(mu, populationData(:,2:3), time, IC);
 
 mu0 = [0.7; 0.01; 0.01; 0.7];
 
-% [muSolution,~] = lsqnonlin(objfun,mu0,[0 0 0 0], [+Inf +Inf +Inf +Inf],options);
+% [0.7; 0.03; 0.02; 0.8];
 
-[muSolution,~] = fmincon(objfun,mu0,[],[],[],[],[0 0 0 0.5], [2 +Inf +Inf +Inf],...
-   [],options2);
+% [muSolution,~] = fmincon(objfun,mu0,[],[],[],[],[0 0 0 0.5], [2 +Inf +Inf +Inf],...
+%    [],options2);
  
+muSolution = fminsearch(objfun,mu0, option);
+
 bSol = muSolution(1);
 pSol = muSolution(2);
 rSol = muSolution(3);

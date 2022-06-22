@@ -1,6 +1,7 @@
-clear all; close all; clc
-
-% lambda-omega reaction-diffusion system
+function [t,x,y,u,v] = reaction_diffusion()
+% This function can be used to solve the following lambda-omega reaction-
+% diffusion system
+% 
 %  u_t = lam(A) u - ome(A) v + d1*(u_xx + u_yy) = 0
 %  v_t = ome(A) u + lam(A) v + d2*(v_xx + v_yy) = 0
 %
@@ -8,6 +9,7 @@ clear all; close all; clc
 %  lam(A) = 1 - A^2
 %  ome(A) = -beta*A^2
 
+disp('Starting solution of the RD system of equations')
 
 t=0:0.05:10;
 d1=0.1; d2=0.1; beta=1.0;
@@ -35,6 +37,8 @@ uvt=[reshape(fft2(u(:,:,1)),1,N) reshape(fft2(v(:,:,1)),1,N)].';
 
 
 for j=1:length(t)-1
+textwaitbar(jj, m, 'Transforming from FFT domain');
+
 ut=reshape((uvsol(j,1:N).'),n,n);
 vt=reshape((uvsol(j,(N+1):(2*N)).'),n,n);
 u(:,:,j+1)=real(ifft2(ut));
@@ -44,12 +48,8 @@ figure(1)
 pcolor(x,y,v(:,:,j+1)); shading interp; colormap(hot); colorbar; drawnow; 
 pause(1)
 end
-% 
+ 
 % save('reaction_diffusion_big.mat','t','x','y','u','v')
-% 
-% %%
-% load reaction_diffusion_big
-% pcolor(x,y,u(:,:,end)); shading interp; colormap(hot)
 
 
 

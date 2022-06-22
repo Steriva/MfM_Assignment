@@ -2,8 +2,18 @@ clear; clc; close all
 
 addpath('matlab')
 
-load('data/reaction_diffusion_big.mat')
-
+if isfile('data/reaction_diffusion_big.mat')
+    load('data/reaction_diffusion_big.mat')
+else
+    check=input('The Reaction diffusion equation will be solved: do you want to continue? [Y/N]\n','s');
+    if strcmp(check,'Y')
+        [t,x,y,u,v] = reaction_diffusion();
+        save('data/reaction_diffusion_big.mat','t','x','y','u','v')
+    else
+        return
+    end
+end
+    
 markersize = 10;
 
 %% Reshaping the data
@@ -206,15 +216,17 @@ figure(5)
 for jj = 1:4
     timePlot = dt * jj * 50;
     subplot(2,4,2*(jj-1)+1), contourf(xPlot, yPlot, u(:,:,timePlot/dt))
-    xlabel('$x$','Interpreter','latex','FontSize',20)
-    ylabel('$y$','Interpreter','latex','FontSize',20)
+    if 2*(jj-1)+1 == 1 || 2*(jj-1)+1 == 5
+        ylabel('$y$','Interpreter','latex','FontSize',20)
+    end
     title(strcat('True - $t=', num2str(timePlot),'$'),'Interpreter','latex','FontSize',20)
     colorbar; clim([-1.5 1.5])
     colormap("turbo")
 
     subplot(2,4,2*(jj)), contourf(xPlot, yPlot, u_NN(:,:,timePlot/dt))
-    xlabel('$x$','Interpreter','latex','FontSize',20)
-    ylabel('$y$','Interpreter','latex','FontSize',20)
+    if jj>2
+        xlabel('$x$','Interpreter','latex','FontSize',20)
+    end
     title(strcat('NN - $t=', num2str(timePlot),'$'),'Interpreter','latex','FontSize',20)
     colorbar; clim([-1.5 1.5])
     colormap("turbo")

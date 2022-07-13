@@ -1,8 +1,9 @@
 # MfM_Assignment
-This repository contains some codes for the Course 'Modelling from Measurements'.
+This repository contains the codes for the Homework Assignment of the course 'Modelling from Measurements', provided by professor N. Kutz at Politecnico di Milano.
+
 The assignment has been divided into two main exercises:
-1. Population Data: perform DMD (standard and optimized version) and model discovery on a given dataset.
-2. Neural Networks for reaction-diffusion, Kuramoto-Sivashinsky  and Lorenz equations.
+1. Population Data: perform DMD (standard and optimized version) and model discovery (SINDy) on a given dataset.
+2. Neural Networks for Kuramoto-Sivashinsky, Reaction-Diffusion and Lorenz equations.
 
 Moreover, an extra-code on the application of SYNDy to the Point Kinetics equations is present.
 

@@ -62,7 +62,7 @@ for jj = 1:length(p)
         colours{jj},'MarkerFaceColor',colours{jj},'Markersize',markersize,'MarkerEdgeColor','k','Linewidth',1);
     hold on
     
-    Legend{jj} = strcat( '$p= ',num2str(p(jj)),'$' );
+    Legend{jj} = strcat( '$s= ',num2str(p(jj)),'$' );
 end
 
 subplot(1,2,1), grid on; grid minor; 
@@ -77,11 +77,11 @@ ylabel('$\frac{\sigma_j}{\sum_k \sigma_k}\;\;[-]$','Interpreter','latex','FontSi
 title('Log Scale','Interpreter','latex','FontSize',30)
 legend(Legend,'Interpreter','latex','FontSize',25)
 
-% h = gcf;
-% set(h,'PaperOrientation','landscape');
-% set(h,'PaperUnits','normalized');
-% set(h,'PaperPosition', [0 0 1 1]);
-% print(gcf, '-dpdf', 'timeDelaySVD.pdf');
+h = gcf;
+set(h,'PaperOrientation','landscape');
+set(h,'PaperUnits','normalized');
+set(h,'PaperPosition', [0 0 1 1]);
+print(gcf, '-dpdf', 'timeDelaySVD.pdf');
 
 %% Perform standard DMD
 

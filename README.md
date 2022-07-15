@@ -18,7 +18,7 @@ The problems have been solved either in MATLAB or in Python. The scripts are all
 ### Notes
 In case of problems, contact stefano.riva@polimi.it.
 
-# Refences
+## Refences
 - [Askham, 2017] Askham, T. (2017). duqbo/optdmd: optdmd v1.0.1.
 - [Belkin et al., 2019] Belkin, M., Hsu, D., Ma, S., and Mandal, S. (2019). Reconciling modern machine-learning practice and the classical bias–variance trade-off. Proceedings of the National Academy of Sciences, 116(32):15849–15854.
 - [Berkooz et al., 1993] Berkooz, G., Holmes, P., and Lumley, J. L. (1993). The Proper Orthogonal Decomposition in the Analysis of Turbulent Flows. Annual Review of Fluid Mechanics, 25(1):539–575.

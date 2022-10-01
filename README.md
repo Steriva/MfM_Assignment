@@ -1,3 +1,4 @@
+theme: minima
 # MfM_Assignment
 This repository contains the codes for the Homework Assignment of the course 'Modelling from Measurements', provided by professor N. Kutz at Politecnico di Milano.
 
